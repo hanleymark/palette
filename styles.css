@@ -23,14 +23,14 @@ body {
 
 .add-zone {
     position: relative;
-    border: 1px solid white;
+    border: none;
     width: 50%;
     max-width: 15px;
     height: 100%;
 }
 
-.first-add-zone, .last-add-zone {
-    max-width: 40px;
+.end-add-zone {
+    max-width: 30px;
 }
 
 .add-button {
@@ -39,12 +39,14 @@ body {
     left: 0;
     right: 0;
     width: 100%;
-    /* height: 100%; */
     top: calc(50% - 20px);
 }
 
+.end-add-button {
+    width: 50%;
+}
+
 .add-button img {
-    margin: 0 auto;
     opacity: 70%;
     width: 200%;
     height: 200%;
@@ -59,4 +61,12 @@ body {
     border: 1px solid gray;
     height: 90%;
     max-height: 250px;
+}
+
+.hidden {
+    flex: 0;
+}
+
+.visible {
+    flex: 1;
 }
