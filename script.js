@@ -118,6 +118,8 @@ function Palette(paletteElements, size = 5, method) {
             let g = Math.floor(leftColour.green * 0.95);
             let b = Math.floor(leftColour.blue * 0.95);
             this.paletteColours.unshift(new Colour(r, g, b));
+            this.display();
+            return;
         }
 
         if (position == this.paletteColours.length) {
@@ -129,16 +131,23 @@ function Palette(paletteElements, size = 5, method) {
             let g = Math.floor(rightColour.green * multiplier);
             let b = Math.floor(rightColour.blue * multiplier);
             this.paletteColours.push(new Colour(r, g, b));
+            this.display();
+            return;
         }
 
+        let leftColour = this.paletteColours[position - 1];
+        let rightColour = this.paletteColours[position];
+        let newColour = this.getIntermediateColour(leftColour, rightColour);
+
+        this.paletteColours.splice(position, 0, newColour);
 
         this.display();
     }
 
     this.getIntermediateColour = function (col1, col2) {
-        let r = Math.abs(col1.red - col2.red) / 2;
-        let g = Math.abs(col1.green - col2.green) / 2;
-        let b = Math.abs(col1.blue - col2.blue) / 2;
+        let r = Math.floor(col1.red + (col2.red - col1.red) / 2);
+        let g = Math.floor(col1.green + (col2.green - col1.green) / 2);
+        let b = Math.floor(col1.blue + (col2.blue - col1.blue) / 2);
 
         return new Colour(r, g, b);
     }
