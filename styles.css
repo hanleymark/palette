@@ -25,12 +25,12 @@ body {
     position: relative;
     border: none;
     width: 50%;
-    max-width: 15px;
+    max-width: 20px;
     height: 100%;
 }
 
 .end-add-zone {
-    max-width: 30px;
+    max-width: 40px;
 }
 
 .add-button {
@@ -40,6 +40,7 @@ body {
     right: 0;
     width: 100%;
     top: calc(50% - 20px);
+    display: none;
 }
 
 .end-add-button {
@@ -50,6 +51,8 @@ body {
     opacity: 70%;
     width: 200%;
     height: 200%;
+    filter: drop-shadow(3px 3px 5px #555);
+    text-align: center;
 }
 
 .add-button img:hover {

@@ -1,4 +1,5 @@
 const palette = new Palette(document.querySelectorAll(".colour"), 5);
+const ADD_ZONES = document.querySelectorAll(".add-zone");
 const ADD_BUTTONS = document.querySelectorAll(".add-button");
 
 const GenerateMethod = {
@@ -12,6 +13,7 @@ function Colour(red, green, blue) {
     this.red = red;
     this.green = green;
     this.blue = blue;
+    this.locked = false;
 
     this.getHexString = function () {
         // Get hex values of red, green and blue components
@@ -30,9 +32,11 @@ function Colour(red, green, blue) {
 };
 
 function Palette(paletteElements, size = 5, method) {
+    this.MAX_COLOURS = 10;
+    this.MIN_COLOURS = 3;
     this.paletteElements = paletteElements;
     // Generate colours array with 5 null items so that it can be iterated over
-    this.paletteColours = Array.apply(null, Array(5)).map(function () { });
+    this.paletteColours = Array.apply(null, Array(size)).map(function () { });
 
     this.generate = function (method) {
         switch (method) {
@@ -51,8 +55,6 @@ function Palette(paletteElements, size = 5, method) {
                 Math.floor(Math.random() * 256),
                 Math.floor(Math.random() * 256));
         };
-
-        console.log(`Palette: ${this.paletteColours}`);
     }
 
     this.display = function () {
@@ -69,7 +71,79 @@ function Palette(paletteElements, size = 5, method) {
             }
         });
     }
+
+    this.setUpListeners = function () {
+        // Set up swatch end zone listeners to display add buttons
+        ADD_ZONES.forEach((addZone) => {
+            addZone.addEventListener("mouseover", (event) => {
+                // Strip 'add-zone' from element Id to leave number of add zone that triggered mouseover event
+                let addZone = +(event.target.id.replace("add-zone", ""));
+
+                if (!isNaN(addZone)) {
+                    // Calculate the subscript of the button to make visible
+                    let addButton = Math.floor((addZone + 1) / 2);
+
+                    ADD_BUTTONS[addButton].style.display = "block";
+
+                    for (let i = 0; i < ADD_BUTTONS.length; i++) {
+                        if (i != addButton) {
+                            ADD_BUTTONS[i].style.display = "none";
+                        }
+                    }
+                }
+            }, false);
+
+            addZone.addEventListener("mouseleave", (event) => {
+                ADD_BUTTONS.forEach((addButton) => {
+                    addButton.style.display = "none";
+                });
+            }, false);
+        });
+
+        // Set up onclick event listeners for add colour buttons
+        for (let i = 0; i < this.MAX_COLOURS; i++) {
+            let img = document.querySelector(`#add-img${i}`);
+            img.addEventListener("mousedown", () => { this.addColour(i); }, false);
+        }
+
+    }
+
+    this.addColour = function (position) {
+        if (this.paletteColours.length == this.MAX_COLOURS) {
+            return;
+        }
+        if (position == 0) {
+            let leftColour = this.paletteColours[0];
+            let r = Math.floor(leftColour.red * 0.95);
+            let g = Math.floor(leftColour.green * 0.95);
+            let b = Math.floor(leftColour.blue * 0.95);
+            this.paletteColours.unshift(new Colour(r, g, b));
+        }
+
+        if (position == this.paletteColours.length) {
+            let rightColour = this.paletteColours.slice(-1)[0];
+            let highComponent = Math.max(rightColour.red, rightColour.green, rightColour.blue);
+            let spaceLeft = this.MAX_COLOURS - this.paletteColours.length;
+            let multiplier = 1 + ((255 - highComponent) / 700);
+            let r = Math.floor(rightColour.red * multiplier);
+            let g = Math.floor(rightColour.green * multiplier);
+            let b = Math.floor(rightColour.blue * multiplier);
+            this.paletteColours.push(new Colour(r, g, b));
+        }
+
+
+        this.display();
+    }
+
+    this.getIntermediateColour = function (col1, col2) {
+        let r = Math.abs(col1.red - col2.red) / 2;
+        let g = Math.abs(col1.green - col2.green) / 2;
+        let b = Math.abs(col1.blue - col2.blue) / 2;
+
+        return new Colour(r, g, b);
+    }
 }
 
 palette.generate(GenerateMethod.Random);
+palette.setUpListeners();
 palette.display();
