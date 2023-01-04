@@ -69,6 +69,15 @@ function Palette(paletteElements, size = 5, method) {
                 element.classList.remove("visible");
                 element.classList.add("hidden");
             }
+
+            // Change the style of the last add mouseover zone to be wider
+            element.children[1].classList.remove("end-add-zone");
+            element.children[1].children[0].classList.remove("end-add-button");
+
+            if(index == this.paletteColours.length - 1) {
+                element.children[1].classList.add("end-add-zone");
+                element.children[1].children[0].classList.add("end-add-button");
+            }
         });
     }
 
@@ -96,7 +105,10 @@ function Palette(paletteElements, size = 5, method) {
             }, false);
 
             addZone.addEventListener("mouseleave", (event) => {
-                let leftFromId = event.relatedTarget.id;
+                if (!event || !event.relatedTarget) {
+                    return;
+                }
+                let leftFromId = event.relatedTarget.id ?? "nullish";
                 if (leftFromId.search("add") != -1) {
                     return;
                 }
@@ -131,6 +143,7 @@ function Palette(paletteElements, size = 5, method) {
 
         if (position == this.paletteColours.length) {
             let rightColour = this.paletteColours.slice(-1)[0];
+            // Get highest value component and set brightness increment so that it can not exceed 0xFF
             let highComponent = Math.max(rightColour.red, rightColour.green, rightColour.blue);
             let spaceLeft = this.MAX_COLOURS - this.paletteColours.length;
             let multiplier = 1 + ((255 - highComponent) / 700);

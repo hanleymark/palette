@@ -44,7 +44,7 @@ body {
 }
 
 .end-add-button {
-    width: 50%;
+    max-width: 50%;
 }
 
 .add-button img {
@@ -53,6 +53,7 @@ body {
     height: 200%;
     filter: drop-shadow(3px 3px 5px #555);
     text-align: center;
+    transition: 0.3s;
 }
 
 .add-button img:hover {
