@@ -29,6 +29,14 @@ function Colour(red, green, blue) {
 
         return rgb;
     }
+
+    this.getContrast = function () {
+        return ((this.red * 299) + (this.green * 587) + (this.blue * 114)) / 1000;
+    }
+
+    this.getForegroundColour = function () {
+        return (this.getContrast() > 128) ? "#000" : "#fff";
+    }
 };
 
 function Palette(paletteElements, size = 5, method) {
@@ -74,11 +82,16 @@ function Palette(paletteElements, size = 5, method) {
             element.children[1].classList.remove("end-add-zone");
             element.children[1].children[0].classList.remove("end-add-button");
 
-            if(index == this.paletteColours.length - 1) {
+            if (index == this.paletteColours.length - 1) {
                 element.children[1].classList.add("end-add-zone");
                 element.children[1].children[0].classList.add("end-add-button");
             }
         });
+
+        // Set contrasting white or black foreground colour for each palette colour
+        this.paletteColours.forEach((colour, index) => {
+            this.paletteElements[index].style.color = colour.getForegroundColour();
+        })
     }
 
     this.setUpListeners = function () {
