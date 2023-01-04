@@ -83,7 +83,9 @@ function Palette(paletteElements, size = 5, method) {
                     // Calculate the subscript of the button to make visible
                     let addButton = Math.floor((addZone + 1) / 2);
 
-                    ADD_BUTTONS[addButton].style.display = "block";
+                    if (this.paletteColours.length < this.MAX_COLOURS) {
+                        ADD_BUTTONS[addButton].style.display = "block";
+                    }
 
                     for (let i = 0; i < ADD_BUTTONS.length; i++) {
                         if (i != addButton) {
@@ -94,6 +96,11 @@ function Palette(paletteElements, size = 5, method) {
             }, false);
 
             addZone.addEventListener("mouseleave", (event) => {
+                let leftFromId = event.relatedTarget.id;
+                if (leftFromId.search("add") != -1) {
+                    return;
+                }
+
                 ADD_BUTTONS.forEach((addButton) => {
                     addButton.style.display = "none";
                 });
