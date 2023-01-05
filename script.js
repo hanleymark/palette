@@ -42,7 +42,7 @@ function Colour(red, green, blue) {
 
 function Palette(paletteElements, size = 5, method) {
     this.MAX_COLOURS = 10;
-    this.MIN_COLOURS = 3;
+    this.MIN_COLOURS = 1;
     this.paletteElements = paletteElements;
     // Generate colours array with 5 null items so that it can be iterated over
     this.paletteColours = Array.apply(null, Array(size)).map(function () { });
@@ -87,18 +87,31 @@ function Palette(paletteElements, size = 5, method) {
                 element.children[2].classList.add("end-add-zone");
                 element.children[2].children[0].classList.add("end-add-button");
             }
-
-            let toolbar = document.getElementsByTagName("template")[0];
-            let clone = toolbar.content.cloneNode(true);
-            let toolbarContainer = paletteElements[index].querySelector(".toolbar-container");
-            toolbarContainer.style.display = "none";
-            toolbarContainer.appendChild(clone);
         });
 
         // Set contrasting white or black foreground colour for each palette colour
         this.paletteColours.forEach((colour, index) => {
             this.paletteElements[index].style.color = colour.getForegroundColour();
         })
+    }
+
+    this.setUpToolbars = function () {
+        let toolbar = document.getElementsByTagName("template")[0];
+        this.paletteElements.forEach((element, index) => {
+            let clone = toolbar.content.cloneNode(true);
+            let toolbarElements = clone.querySelectorAll(".material-symbols-outlined");
+            // Add listeners to each toolbar button with index of colour to which toolbar belongs
+            toolbarElements[0].addEventListener("mousedown", () => { this.removeColour(index); }, false);
+            toolbarElements[1].addEventListener("mousedown", () => { this.moveLeft(index); }, false);
+            toolbarElements[2].addEventListener("mousedown", () => { this.moveRight(index); }, false);
+            toolbarElements[3].addEventListener("mousedown", () => { this.copyToClipboard(index); }, false);
+            toolbarElements[4].addEventListener("mousedown", () => { this.toggleLockColour(index); }, false);
+            toolbarElements[5].addEventListener("mousedown", () => { this.changeShade(index); }, false);
+
+            let toolbarContainer = element.querySelector(".toolbar-container");
+            toolbarContainer.style.display = "none";
+            toolbarContainer.appendChild(clone);
+        });
     }
 
     this.setUpListeners = function () {
@@ -144,16 +157,16 @@ function Palette(paletteElements, size = 5, method) {
             let img = document.querySelector(`#add-img${i}`);
             img.addEventListener("mousedown", () => { this.addColour(i); }, false);
         }
-        
+
         // Set up mouseover event listeners for colour bars to make toolbar appear/disappear
         for (let i = 0; i < this.paletteElements.length; i++) {
             paletteElements[i].addEventListener("mouseenter", (event) => {
-                let toolbarIndex = +event.target.id.replace("colour","");
+                let toolbarIndex = +event.target.id.replace("colour", "");
                 TOOLBAR_CONTAINERS[toolbarIndex].style.display = "flex";
             }, false);
 
             paletteElements[i].addEventListener("mouseleave", (event) => {
-                let toolbarIndex = +event.target.id.replace("colour","");
+                let toolbarIndex = +event.target.id.replace("colour", "");
                 TOOLBAR_CONTAINERS[toolbarIndex].style.display = "none";
             }, false);
         }
@@ -196,6 +209,13 @@ function Palette(paletteElements, size = 5, method) {
         this.display();
     }
 
+    this.removeColour = function (index) {
+        if (this.paletteColours.length > this.MIN_COLOURS) {
+            this.paletteColours.splice(index, 1);
+            this.display();
+        }
+    }
+
     this.getIntermediateColour = function (col1, col2) {
         let r = Math.floor(col1.red + (col2.red - col1.red) / 2);
         let g = Math.floor(col1.green + (col2.green - col1.green) / 2);
@@ -203,6 +223,7 @@ function Palette(paletteElements, size = 5, method) {
 
         return new Colour(r, g, b);
     }
+    this.setUpToolbars();
 }
 
 palette.generate(GenerateMethod.Random);
