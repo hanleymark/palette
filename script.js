@@ -1,6 +1,7 @@
 const palette = new Palette(document.querySelectorAll(".colour"), 5);
 const ADD_ZONES = document.querySelectorAll(".add-zone");
 const ADD_BUTTONS = document.querySelectorAll(".add-button");
+const TOOLBAR_CONTAINERS = document.querySelectorAll(".toolbar-container");
 
 const GenerateMethod = {
     Monochromatic: 0,
@@ -79,13 +80,19 @@ function Palette(paletteElements, size = 5, method) {
             }
 
             // Change the style of the last add mouseover zone to be wider
-            element.children[1].classList.remove("end-add-zone");
-            element.children[1].children[0].classList.remove("end-add-button");
+            element.children[2].classList.remove("end-add-zone");
+            element.children[2].children[0].classList.remove("end-add-button");
 
             if (index == this.paletteColours.length - 1) {
-                element.children[1].classList.add("end-add-zone");
-                element.children[1].children[0].classList.add("end-add-button");
+                element.children[2].classList.add("end-add-zone");
+                element.children[2].children[0].classList.add("end-add-button");
             }
+
+            let toolbar = document.getElementsByTagName("template")[0];
+            let clone = toolbar.content.cloneNode(true);
+            let toolbarContainer = paletteElements[index].querySelector(".toolbar-container");
+            toolbarContainer.style.display = "none";
+            toolbarContainer.appendChild(clone);
         });
 
         // Set contrasting white or black foreground colour for each palette colour
@@ -137,7 +144,19 @@ function Palette(paletteElements, size = 5, method) {
             let img = document.querySelector(`#add-img${i}`);
             img.addEventListener("mousedown", () => { this.addColour(i); }, false);
         }
+        
+        // Set up mouseover event listeners for colour bars to make toolbar appear/disappear
+        for (let i = 0; i < this.paletteElements.length; i++) {
+            paletteElements[i].addEventListener("mouseenter", (event) => {
+                let toolbarIndex = +event.target.id.replace("colour","");
+                TOOLBAR_CONTAINERS[toolbarIndex].style.display = "flex";
+            }, false);
 
+            paletteElements[i].addEventListener("mouseleave", (event) => {
+                let toolbarIndex = +event.target.id.replace("colour","");
+                TOOLBAR_CONTAINERS[toolbarIndex].style.display = "none";
+            }, false);
+        }
     }
 
     this.addColour = function (position) {
