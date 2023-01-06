@@ -3,7 +3,9 @@
 }
 
 body {
-    background-color: cornflowerblue
+    background-color: #fff;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 20px;
 }
 
 #palette-container {
@@ -17,10 +19,11 @@ body {
 
 .colour {
     display: flex;
+    /* position: relative; */
     flex-wrap: nowrap;
     justify-content: space-between;
     width: 100%;
-    height: 600px;
+    height: 550px;
     margin: 0;
     padding: 0;
 }
@@ -84,20 +87,19 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* color: #fff; */
     height: 60%;
 }
 
-.toolbar > span {
+.toolbar>span {
     width: 50px;
     height: 50px;
     border-radius: 8px;
     margin: 2px;
     text-align: center;
-    padding-top: 12px; 
+    padding-top: 12px;
 }
 
-.toolbar > span:hover {
+.toolbar>span:hover {
     background-color: rgba(255, 255, 255, 0.2);
     cursor: pointer;
 }
@@ -111,9 +113,62 @@ body {
 }
 
 .material-symbols-outlined {
+    position: relative;
     font-variation-settings:
         'FILL'0,
         'wght'400,
         'GRAD'0,
         'opsz'48
+}
+
+.material-symbols-outlined .tooltip-text {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 14px;
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    opacity: 75%;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    transition-delay: 0.5s;
+    transition-property: visibility;
+    position: absolute;
+    z-index: 1;
+    top: -20px;
+    left: -35px;
+}
+
+.material-symbols-outlined:hover .tooltip-text {
+    visibility: visible;
+}
+
+.info-container {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: stretch;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.information {
+    /* padding: 20px; */
+    text-align: center;
+    margin: 0;
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow: hidden;
+}
+
+.information span {
+    display: block;
+    font-size: 0.75em;
+    margin: 20px 0;
+}
+
+.i {
+    /* display: flex;
+    flex-direction: column; */
 }

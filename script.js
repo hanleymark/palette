@@ -2,6 +2,7 @@ const palette = new Palette(document.querySelectorAll(".colour"), 5);
 const ADD_ZONES = document.querySelectorAll(".add-zone");
 const ADD_BUTTONS = document.querySelectorAll(".add-button");
 const TOOLBAR_CONTAINERS = document.querySelectorAll(".toolbar-container");
+let info = document.querySelectorAll(".information");
 
 const GenerateMethod = {
     Monochromatic: 0,
@@ -71,12 +72,19 @@ function Palette(paletteElements, size = 5, method) {
         this.paletteElements.forEach((element, index) => {
             if (index < numberOfColours) {
                 element.style.backgroundColor = this.paletteColours[index].getHexString();
+                info[index].style.backgroundColor = this.paletteColours[index].getHexString();
                 element.classList.remove("hidden");
                 element.classList.add("visible");
+                
+                info[index].classList.remove("hidden");
+                info[index].classList.add("visible");
+                
             }
             else {
                 element.classList.remove("visible");
                 element.classList.add("hidden");
+                info[index].classList.remove("visible");
+                info[index].classList.add("hidden");
             }
 
             // Change the style of the last add mouseover zone to be wider
@@ -92,7 +100,12 @@ function Palette(paletteElements, size = 5, method) {
         // Set contrasting white or black foreground colour for each palette colour
         this.paletteColours.forEach((colour, index) => {
             this.paletteElements[index].style.color = colour.getForegroundColour();
+            info[index].style.color = colour.getForegroundColour();
+            info[index].children[0].innerHTML = colour.getHexString().toUpperCase();
+            info[index].children[1].innerHTML = "Red";
         })
+
+
     }
 
     this.setUpToolbars = function () {
@@ -112,6 +125,7 @@ function Palette(paletteElements, size = 5, method) {
             toolbarContainer.style.display = "none";
             toolbarContainer.appendChild(clone);
         });
+
     }
 
     this.setUpListeners = function () {
@@ -214,6 +228,28 @@ function Palette(paletteElements, size = 5, method) {
             this.paletteColours.splice(index, 1);
             this.display();
         }
+    }
+
+    this.moveLeft = function (index) {
+        if (index > 0) {
+            let temp = this.paletteColours[index];
+            this.paletteColours.splice(index, 1);
+            this.paletteColours.splice(index - 1, 0, temp);
+            this.display();
+        }
+    }
+
+    this.moveRight = function (index) {
+        if (index < this.paletteColours.length - 1) {
+            let temp = this.paletteColours[index];
+            this.paletteColours.splice(index, 1);
+            this.paletteColours.splice(index + 1, 0, temp);
+            this.display(); message
+        }
+    }
+
+    this.copyToClipboard = function (index) {
+        navigator.clipboard.writeText(this.paletteColours[index].getHexString());
     }
 
     this.getIntermediateColour = function (col1, col2) {
