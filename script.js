@@ -125,7 +125,11 @@ function Palette(paletteElements, size = 5, method) {
         this.paletteColours.forEach((colour, index) => {
             this.paletteElements[index].style.color = colour.getForegroundColour();
             info[index].style.color = colour.getForegroundColour();
-            info[index].children[0].innerHTML = colour.getHexString().toUpperCase();
+            //info[index].children[0].innerHTML = colour.getHexString().toUpperCase();
+            info[index].firstChild.innerHTML =
+                this.paletteColours[index].locked ?
+                    this.paletteColours[index].getHexString().toUpperCase() + "<br>(locked)" :
+                    this.paletteColours[index].getHexString().toUpperCase();
             colourPickers[index].value = colour.getHexString();
             //info[index].children[1].innerHTML = colour.getColourName();
         })
@@ -210,12 +214,18 @@ function Palette(paletteElements, size = 5, method) {
             }, false);
 
             colourPickers[i].addEventListener("change", (event) => {
-                const hex = colourPickers[i].value.replace("#", "");
-                const r = parseInt(hex.slice(0,2),16);
-                const g = parseInt(hex.slice(2,4),16);
-                const b = parseInt(hex.slice(4,6),16);
-                this.paletteColours[i] = new Colour(r,g,b);
-                this.display();
+
+                if (this.paletteColours[i].locked) {
+                    displayMessage("Unlock colour before changing");
+                }
+                else {
+                    const hex = colourPickers[i].value.replace("#", "");
+                    const r = parseInt(hex.slice(0, 2), 16);
+                    const g = parseInt(hex.slice(2, 4), 16);
+                    const b = parseInt(hex.slice(4, 6), 16);
+                    this.paletteColours[i] = new Colour(r, g, b);
+                    this.display();
+                }
             })
         }
     }
@@ -311,7 +321,7 @@ function Palette(paletteElements, size = 5, method) {
     }
 
     this.pickColour = function (index) {
-        colourPickers[index].style.opacity = 1;
+        ;
     }
 
     this.getIntermediateColour = function (col1, col2) {
