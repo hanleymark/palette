@@ -2,7 +2,8 @@ const palette = new Palette(document.querySelectorAll(".colour"), 5);
 const ADD_ZONES = document.querySelectorAll(".add-zone");
 const ADD_BUTTONS = document.querySelectorAll(".add-button");
 const TOOLBAR_CONTAINERS = document.querySelectorAll(".toolbar-container");
-let info = document.querySelectorAll(".information");
+const info = document.querySelectorAll(".information");
+const colourPickers = document.querySelectorAll(".colour-picker");
 
 const GenerateMethod = {
     Monochromatic: 0,
@@ -39,7 +40,18 @@ function Colour(red, green, blue) {
     this.getForegroundColour = function () {
         return (this.getContrast() > 128) ? "#000" : "#fff";
     }
-};
+
+    this.getColourName = async function () {
+        hex = this.getHexString().replace("#", "").toUpperCase();
+        url = `https://www.thecolorapi.com/id?hex=${hex}`;
+
+        const response = await fetch(url);
+
+        const data = await response.json();
+
+        return data[0].name;
+    }
+}
 
 function Palette(paletteElements, size = 5, method) {
     this.MAX_COLOURS = 10;
@@ -60,10 +72,22 @@ function Palette(paletteElements, size = 5, method) {
 
     this.generateRandom = function () {
         for (let i = 0; i < this.paletteColours.length; i++) {
-            this.paletteColours[i] = new Colour(
-                Math.floor(Math.random() * 256),
-                Math.floor(Math.random() * 256),
-                Math.floor(Math.random() * 256));
+
+            if (!this.paletteColours[i]) {
+
+                this.paletteColours[i] = new Colour(
+                    Math.floor(Math.random() * 256),
+                    Math.floor(Math.random() * 256),
+                    Math.floor(Math.random() * 256));
+            }
+            else {
+                if (!this.paletteColours[i].locked) {
+                    this.paletteColours[i] = new Colour(
+                        Math.floor(Math.random() * 256),
+                        Math.floor(Math.random() * 256),
+                        Math.floor(Math.random() * 256));
+                }
+            }
         };
     }
 
@@ -75,10 +99,10 @@ function Palette(paletteElements, size = 5, method) {
                 info[index].style.backgroundColor = this.paletteColours[index].getHexString();
                 element.classList.remove("hidden");
                 element.classList.add("visible");
-                
+
                 info[index].classList.remove("hidden");
                 info[index].classList.add("visible");
-                
+
             }
             else {
                 element.classList.remove("visible");
@@ -102,7 +126,8 @@ function Palette(paletteElements, size = 5, method) {
             this.paletteElements[index].style.color = colour.getForegroundColour();
             info[index].style.color = colour.getForegroundColour();
             info[index].children[0].innerHTML = colour.getHexString().toUpperCase();
-            info[index].children[1].innerHTML = "Red";
+            colourPickers[index].value = colour.getHexString();
+            //info[index].children[1].innerHTML = colour.getColourName();
         })
 
 
@@ -118,8 +143,8 @@ function Palette(paletteElements, size = 5, method) {
             toolbarElements[1].addEventListener("mousedown", () => { this.moveLeft(index); }, false);
             toolbarElements[2].addEventListener("mousedown", () => { this.moveRight(index); }, false);
             toolbarElements[3].addEventListener("mousedown", () => { this.copyToClipboard(index); }, false);
-            toolbarElements[4].addEventListener("mousedown", () => { this.toggleLockColour(index); }, false);
-            toolbarElements[5].addEventListener("mousedown", () => { this.changeShade(index); }, false);
+            toolbarElements[4].addEventListener("mousedown", () => { this.toggleLockColour(index, toolbarElements[4]); }, false);
+            toolbarElements[5].addEventListener("mousedown", () => { this.pickColour(index); }, false);
 
             let toolbarContainer = element.querySelector(".toolbar-container");
             toolbarContainer.style.display = "none";
@@ -250,6 +275,22 @@ function Palette(paletteElements, size = 5, method) {
 
     this.copyToClipboard = function (index) {
         navigator.clipboard.writeText(this.paletteColours[index].getHexString());
+        displayMessage("Copied to clipboard");
+    }
+
+    this.toggleLockColour = function (index, toolbarElement) {
+        this.paletteColours[index].locked = !this.paletteColours[index].locked;
+        toolbarElement.innerHTML = this.paletteColours[index].locked ? "lock" : "lock_open";
+        const message = this.paletteColours[index].locked ? "Colour locked" : "Colour unlocked";
+        info[index].firstChild.innerHTML =
+            this.paletteColours[index].locked ?
+            this.paletteColours[index].getHexString().toUpperCase() + "<br>(locked)" :
+            this.paletteColours[index].getHexString().toUpperCase();
+        displayMessage(message);
+    }
+    
+    this.pickColour = function (index) {        
+        colourPickers[index].style.opacity = 1;
     }
 
     this.getIntermediateColour = function (col1, col2) {
@@ -262,6 +303,23 @@ function Palette(paletteElements, size = 5, method) {
     this.setUpToolbars();
 }
 
+function displayMessage(message) {
+    const messageBox = document.querySelector("#message");
+    messageBox.innerHTML = message;
+    messageBox.style.display = "block";
+
+    setTimeout(() => {
+        messageBox.style.display = "none";
+    }, 2000);
+}
+
 palette.generate(GenerateMethod.Random);
 palette.setUpListeners();
 palette.display();
+
+document.addEventListener('keydown', event => {
+    if (event.code === 'Space') {
+      palette.generate();
+      palette.display();
+    }
+  });

@@ -16,6 +16,9 @@
 </head>
 
 <body>
+    <div class="title-bar">
+        <h1>PALETTE PICKER</h1>
+    </div>
     <!-- Set up ten palette colours - these will be shown/hidden as number of colours changes -->
     <div id="palette-container">
         <div class="colour" id="colour0">
@@ -126,23 +129,19 @@
         <div class="information"><div></div><span></span></div>
         <div class="information"><div></div><span></span></div>
     </div>
+    <div id="message"></div>
+
+
     <template>
         <div class="toolbar">
             <span class="material-symbols-outlined">close<span class="tooltip-text">Remove colour</span></span>
             <span class="material-symbols-outlined">arrow_back<span class="tooltip-text">Move left</span></span>
             <span class="material-symbols-outlined">arrow_forward<span class="tooltip-text">Move right</span></span>
             <span class="material-symbols-outlined">content_copy<span class="tooltip-text">Copy hex</span></span>
-            <span class="material-symbols-outlined">lock<span class="tooltip-text">Lock colour</span></span>
-            <span class="material-symbols-outlined">view_compact<span class="tooltip-text">Change colour</span></span>
+            <span class="material-symbols-outlined">lock_open<span class="tooltip-text">Lock colour</span></span>
+            <span class="material-symbols-outlined">view_compact<span class="tooltip-text">Change colour</span></span><input type="color" class="colour-picker"/>
         </div>
     </template>
-
-
-    <!-- <div class="information">
-        HERE
-        <span>HERE</span>
-    </div> -->
-
 
     <script src="./script.js"></script>
 </body>
