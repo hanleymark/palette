@@ -208,6 +208,15 @@ function Palette(paletteElements, size = 5, method) {
                 let toolbarIndex = +event.target.id.replace("colour", "");
                 TOOLBAR_CONTAINERS[toolbarIndex].style.display = "none";
             }, false);
+
+            colourPickers[i].addEventListener("change", (event) => {
+                const hex = colourPickers[i].value.replace("#", "");
+                const r = parseInt(hex.slice(0,2),16);
+                const g = parseInt(hex.slice(2,4),16);
+                const b = parseInt(hex.slice(4,6),16);
+                this.paletteColours[i] = new Colour(r,g,b);
+                this.display();
+            })
         }
     }
 
@@ -249,6 +258,10 @@ function Palette(paletteElements, size = 5, method) {
     }
 
     this.removeColour = function (index) {
+        if (this.paletteColours[index].locked) {
+            displayMessage("Unlock before removing");
+            return;
+        }
         if (this.paletteColours.length > this.MIN_COLOURS) {
             this.paletteColours.splice(index, 1);
             this.display();
@@ -256,6 +269,10 @@ function Palette(paletteElements, size = 5, method) {
     }
 
     this.moveLeft = function (index) {
+        if (this.paletteColours[index].locked) {
+            displayMessage("Unlock before moving");
+            return;
+        }
         if (index > 0) {
             let temp = this.paletteColours[index];
             this.paletteColours.splice(index, 1);
@@ -265,6 +282,10 @@ function Palette(paletteElements, size = 5, method) {
     }
 
     this.moveRight = function (index) {
+        if (this.paletteColours[index].locked) {
+            displayMessage("Unlock before moving");
+            return;
+        }
         if (index < this.paletteColours.length - 1) {
             let temp = this.paletteColours[index];
             this.paletteColours.splice(index, 1);
@@ -284,12 +305,12 @@ function Palette(paletteElements, size = 5, method) {
         const message = this.paletteColours[index].locked ? "Colour locked" : "Colour unlocked";
         info[index].firstChild.innerHTML =
             this.paletteColours[index].locked ?
-            this.paletteColours[index].getHexString().toUpperCase() + "<br>(locked)" :
-            this.paletteColours[index].getHexString().toUpperCase();
+                this.paletteColours[index].getHexString().toUpperCase() + "<br>(locked)" :
+                this.paletteColours[index].getHexString().toUpperCase();
         displayMessage(message);
     }
-    
-    this.pickColour = function (index) {        
+
+    this.pickColour = function (index) {
         colourPickers[index].style.opacity = 1;
     }
 
@@ -319,7 +340,7 @@ palette.display();
 
 document.addEventListener('keydown', event => {
     if (event.code === 'Space') {
-      palette.generate();
-      palette.display();
+        palette.generate();
+        palette.display();
     }
-  });
+});
