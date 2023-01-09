@@ -217,6 +217,7 @@ function Palette(paletteElements, size = 5, method) {
 
                 if (this.paletteColours[i].locked) {
                     displayMessage("Unlock colour before changing");
+                    colourPickers[i].value = this.paletteColours[i].getHexString();
                 }
                 else {
                     const hex = colourPickers[i].value.replace("#", "");
