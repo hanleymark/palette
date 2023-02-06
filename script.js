@@ -41,15 +41,18 @@ function Colour(red, green, blue) {
         return (this.getContrast() > 128) ? "#000" : "#fff";
     }
 
-    this.getColourName = async function () {
+    this.getColourName = function (element) {
         hex = this.getHexString().replace("#", "").toUpperCase();
         url = `https://www.thecolorapi.com/id?hex=${hex}`;
-
-        const response = await fetch(url);
-
-        const data = await response.json();
-
-        return data[0].name;
+        fetch(url)
+        .then((response) => {
+            //console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            element.innerHTML = data.name.value;
+        });
+        return "";
     }
 }
 
@@ -131,8 +134,9 @@ function Palette(paletteElements, size = 5, method) {
                     this.paletteColours[index].getHexString().toUpperCase() + "<br>(locked)" :
                     this.paletteColours[index].getHexString().toUpperCase();
             colourPickers[index].value = colour.getHexString();
-            //info[index].children[1].innerHTML = colour.getColourName();
-        })
+
+            colour.getColourName(info[index].children[1]);
+        });
 
 
     }
